@@ -1,3 +1,3 @@
 # aws-raw-notes
 
-Raw notes in the process of being edited
+Raw supplemental notes. In the process of being edited

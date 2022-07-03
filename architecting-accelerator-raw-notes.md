@@ -35,11 +35,11 @@ Edge location can also be called PoPs (point of presence)
 Recap Day 1:
 
 S3 objects are stored in buckets.  It’s private by default. Need to make config changes to make it public.  
-S3 - multiple classes to store data in (standard, one zone, standard IA, glacier, etc).  Can store unlimited amount of data (max file size is 5TB)
+S3 - multiple classes to store data in (standard, one zone, standard IA, glacier, etc.).  Can store unlimited amount of data (max file size is 5TB)
 Intelligent tiering - moving based on ML patterns
 Compute: EC2 (instances - don’t call them VM on AWS).  Choose AMI, choose instance type (from family - choose CPU/RAM), networking, storage (EBS).  EBS charges you cased on the amount of storage you consume.
 Security Groups - mechanism/firewall that controls what kind of traffic can come into and out of EC2 instances.
-DBs: NoSQL and SQL (non-relational / relational).  RDS is managed solution for relational dbs. Can save a lot of time with RDS since you don’t have to manage much.  
+DBs: NoSQL and SQL (non-relational / relational).  RDS is managed solution for relational databases. Can save a lot of time with RDS since you don’t have to manage much.  
 
 ## Networking Part 1
 
@@ -54,7 +54,7 @@ VPC gives you the networking layer in AWS.  It’s the virtual network that can 
 
 VPCs are a regional resource.  Can have multiple in a single region.  Max number of VPCs you can create is 5 by default (soft quota).  When you setup AWS all accounts get a default VPC (in each region). 
 
-VPC dashboard is a great tool in the AWS console (something you may want to visit daily, etc).
+VPC dashboard is a great tool in the AWS console (something you may want to visit daily, etc.).
 
 VPCs job is to put the resources across different AZs.  Extend VPC to other AZs with subnets. 
 
@@ -62,7 +62,7 @@ VPCs job is to put the resources across different AZs.  Extend VPC to other AZs 
 Having only one VPC is good for high-performance computing needs.  For most cases though you want to use Multi-VPC or Multi-Account
 
 
-Good for separate stages (qa, stage, prod, etc). 
+Good for separate stages (qa, stage, prod, etc.). 
 
 
 Multi-account - can have account segregation at the account level (not VPC).  Separate by products. Requires a lot of management. 
@@ -83,7 +83,7 @@ Primary CIDR when you have a VPC
 CIDR notation (slash notation): 172.16.0.0/16 = 65536 addresses.  The slash 16 is the prefix length (length of the subnet mask).  The range is /16 to /28.  Inverse relationship exists. Smaller the prefix means the larger amount of IP addresses. /28 is only 16 IP addresses. 
 
 
-IPV4 - valid length /0 to /32. They are 32bits. 2^32 is the max number if IP addresses in the world.  They are almost full so that’s why we have IPV6.
+IPV4 - valid length /0 to /32. They are 32bits. 2^32 is the max number if IP addresses in the world.  They are almost full, so that’s why we have IPV6.
  If you don’t choose CIDR block carefully you could be in trouble in the future. 
 
 
@@ -91,7 +91,7 @@ Website you can use to do the math for you: [https://www.ipaddressguide.com/cidr
 
 ### Subnets
 
-Subnets are a zonal resource (not regional).  Subnet placement is very important. A subnet is a logical container with a VPC that holds VPC resources. Let’s you isolate resources from each other. Ex. Can create one subnet for public access, and other for web resources to access.  Kind of similar to LANS/vLANS. Every instance has to exist within a subnet. Once created in a subnet, cannot move it out.  Can’t move instances from one VPC to another. 
+Subnets are a zonal resource (not regional).  Subnet placement is very important. A subnet is a logical container with a VPC that holds VPC resources. Lets you isolate resources from each other. Ex. Can create one subnet for public access, and other for web resources to access.  Kind of similar to LANs/VLANs. Every instance has to exist within a subnet. Once created in a subnet, cannot move it out.  Can’t move instances from one VPC to another. 
 Carve out a small CIDR block for each subnet.
 
 You don’t get all IP addresses from AWS.  They reserve 5.
@@ -141,7 +141,7 @@ Security groups: firewall that creates stateful rules (ingress is coming inside)
 NACLs: contains inbound and outbound rules.  Acts like a firewall. 
 
 
-Must configure both inbound and outbound.  By default allows everyting.  You define what to DENY.
+Must configure both inbound and outbound.  Allows everything by default.  You define what to **DENY**.
 
 Review:
 
@@ -150,12 +150,12 @@ Review:
 
 ### Connecting networks
 
-VPG Virtual private gateway (VGW) - connects on-prem network to Amazon VPC
+VPG Virtual private gateway (VGW) - connects on-premise network to Amazon VPC
 
 
 
 
-with Direct Connect you bypass the internet all together.  Good for transferring large data, regulatory requirements, etc
+With Direct Connect you bypass the internet all together.  Good for transferring large data, regulatory requirements, etc
 
 
 Direct connect is a dedicated private line to AWS resources
@@ -176,8 +176,8 @@ Bigger companies use another direct connection as a backup cause VPN speeds coul
 VPCs are completely isolated, but sometimes need to talk to each other
 
 
-To enable VPC peering you need to setup connection between the 2 VPCs.  It’s a point to point between 2 and only 2 VPCs.  Peered VPCs cannot have any overlapping CIDR blocks. If you have more than more 2 VPCs that you need to connect you need to connect a peering connection between each pair.  VPC does not support transitive peering. 
-Route table comes in to play with peering. You get a peering id and put that in the route tables after establishing peering connection
+To enable VPC peering you need to set up connection between the 2 VPCs.  It’s a point to point between 2 and only 2 VPCs.  Peered VPCs cannot have any overlapping CIDR blocks. If you have more than more 2 VPCs that you need to connect you need to connect a peering connection between each pair.  VPC does not support transitive peering. 
+Route table comes in to play with peering. You get a peering ID and put that in the route tables after establishing peering connection
 
 
 
@@ -203,14 +203,14 @@ Transit Gateway: solution which is highly available way to connect multiple VPCs
 Very important term in AWS.  Balances/distributes your traffic.   
 
 
-Service that sits infront of infrastructure and directs traffic.  Automates the process
+Service that sits in front of infrastructure and directs traffic.  Automates the process
 
 ELB: has several options
 
 
-Application LB - functions at Layer 7 (http, https)
+Application LB - functions at Layer 7 (HTTP, HTTPS)
 
-Network LB functions at Layer 4 (tcp, tls, udp)
+Network LB functions at Layer 4 (TCP, TLS, UDP)
 
 
 ELB provides a lot of features: HA, health checks, security (control traffic), TLS termination(can install a SSL on the ELB - saves a lot of compute resources) 
@@ -256,18 +256,18 @@ Least privilege principle - allow access only based on their current need.
 IAM is a service that allows you to assign access and privilege to users. Can be used for auditing as well.  
 
 
-Authentication and authorization.  Can give a new user programatic access (access key) or as password.  You can also add users to a specific Group.  Gives all users in group specific permissions. 
+Authentication and authorization.  Can give a new user programmatic access (access key) or as password.  You can also add users to a specific Group.  Gives all users in group specific permissions. 
 AWS has many managed policies.  
 
-When you login with an IAM user you see the username at the top right of the console. 
+When you log in with an IAM user you see the username at the top right of the console. 
 
 Least privilege: be careful how and when you share resources.  Share only what is needed. 
 
 
-IAM principals: anything that can manipulate a resource. Have no acceess by default - need to define everything.  IAM user ≠ account. 
+IAM principals: anything that can manipulate a resource. Have no access by default - need to define everything.  IAM user ≠ account. 
 
 
-You grant access with policies. Policy’s job is to control behavior of IAM identities.  Defines one or more action.  There are hundreds or preset policies. You can also create your own (only once you are well verse with the statement model)
+You grant access with policies. Policy’s job is to control behavior of IAM identities.  Defines one or more action.  There are hundreds or preset policies. You can also create your own (only once you are well versed with the statement model)
 
 
 Any action that is not explicitly allowed will be denied. If there is a conflict with two policies (allow/deny), then the denied policy will take effect.  Deny always wins.
@@ -292,7 +292,7 @@ You can group users and create just one policy for the group.
 
 ### Federated identity management
 
-Let’s you grant short-term access (because IAM policies are permanent)
+Lets you grant short-term access (because IAM policies are permanent)
 
 
 Roles are not applied, they are assumed.  Roles are similar to a user, but instead of being uniquely associated to one person it’s anybody who assumes role. 
@@ -338,10 +338,10 @@ CloudWatch organizes metrics, stores them and classifies.  Metrics is the data a
 Has Log data
 
 
-Can have alarms set  to automatically initiate an action on your behalf.  Like send an email if a certain % of resources used.   Must be defined.
+Can have alarms set to automatically initiate an action on your behalf.  Like send an email if a certain % of resources used.  Must be defined.
 
 
-Events delivers a realtime stream of events
+CloudWatch Events delivers a real-time stream of events
 
 
 Rules 
@@ -356,10 +356,10 @@ With CloudTrail you can see who is doing what exactly.  It logs every API event.
 
 ### EC2 Auto Scaling
 
-ASG - provisions and starts on your behalf a certain number of instances.   Can automatically replace failures.  
+ASG - provisions and starts on your behalf a certain number of instances.  Can automatically replace failures.  
 
 
-When you create a ASG you need to specify the # of instances (min/max, desired, etc)
+When you create a ASG you need to specify the # of instances (min/max, desired, etc.)
 
 There are 3 ways to scale - by time/schedule, dynamically based on resource utilization, predictive - uses ML instead of manually adjusting
 
@@ -383,13 +383,13 @@ Aurora also has serverless version
 ## RECAP DAY 2
 
 Recap day 2:
-Discussed networking.  VPCs have subnets/CIDR blocks. CIDR needs to be in VPC range.  Divide subnet based on the block. VPCs are private network in the cloud.  Logical isolation for workload.  Allows custom access controls, security settings.  Can have up to 5 VPCs in a region (default). When you create a VPC there can be a single environment, multi account, etc.  There are two cat of subnets, private and public. The difference is public can access the internet, private ones can not. Public has entry of internet gateway in route table to give access.  Security groups are firewalls for EC2.  Controls inbound and outbound traffic.  SGs have rules that are stateful (info is tracked).  By default, requests are denied - you have explicitly create rules to allow.  What is allowed for inbound is allowed for outbound.  If you want to extend on-prem network you can leverage VPN, Direct Connect (dedicated 1/10/100 connectivity). DC designed for biz with long term need.  VPCs can talk to each other through VPC peering. Must connect each VPC to each other, VPC peering does not support transitive relationship.  It’s 1 to 1 only.  VPC endpoints can be used to connect across AWS resources without going over the internet.   Load balancers (ELB = managed service) distributes network traffic across VPC. Application, network and classic balancers exists.  App supports the traffic from layer 7.  Network load balancers support traffic from layer 4 (EC2 instances, containers, etc). LB ensure HA, health checks, security features, etc. High Availability(HA) ensures the entire app is up in running in case of failures.  Route 53 can be used to provide routing options to make sure traffic is distributed based on policies.  IAM - principal users gets a policy.  Authorization and authentication. You grant user certain policy giving access to what they can do.  Can group IAM users to make management easier.  Federation can be used to extend authorization.  Eslaticity/HA used to scale DBs, instances, etc. 
+Discussed networking.  VPCs have subnets/CIDR blocks. CIDR needs to be in VPC range.  Divide subnet based on the block. VPCs are private network in the cloud.  Logical isolation for workload.  Allows custom access controls, security settings.  Can have up to 5 VPCs in a region (default). When you create a VPC there can be a single environment, multi account, etc. There are two categories of subnets, private and public. The difference is public can access the internet, private ones can not. Public has entry of internet gateway in route table to give access.  Security groups are firewalls for EC2.  Controls inbound and outbound traffic.  Security Groups have rules that are stateful (info is tracked).  By default, requests are denied - you have explicitly create rules to allow.  What is allowed for inbound is allowed for outbound.  If you want to extend on-premise network you can leverage VPN, Direct Connect (dedicated 1/10/100 connectivity). DC designed for biz with long term need.  VPCs can talk to each other through VPC peering. Must connect each VPC to each other, VPC peering does not support transitive relationship.  It’s 1 to 1 only.  VPC endpoints can be used to connect across AWS resources without going over the internet.  Load balancers (ELB = managed service) distributes network traffic across VPC. Application, network and classic balancers exists.  App supports the traffic from layer 7.  Network load balancers support traffic from layer 4 (EC2 instances, containers, etc.). LB ensure HA, health checks, security features, etc. High Availability(HA) ensures the entire app is up in running in case of failures.  Route 53 can be used to provide routing options to make sure traffic is distributed based on policies.  IAM - principal users gets a policy.  Authorization and authentication. You grant user certain policy giving access to what they can do.  Can group IAM users to make management easier.  Federation can be used to extend authorization.  Elasticity/HA used to scale DBs, instances, etc. 
 
 ## Automation
 
 ### Why automate?
 
-Reduce human interaction with the IT systems.  Automation can control all elements.   Goal is to improve efficiency of IT operations and staff.  The goal is to go “hands-off”.  Speeds workload deployments.  Help reduces cost. 
+Reduce human interaction with the IT systems.  Automation can control all elements.  Goal is to improve efficiency of IT operations and staff.  The goal is to go “hands-off”.  Speeds workload deployments.  Help reduces cost. 
 
 
  Key component to drive efficiency. Updates/OS patches/Ordering/Configuration can become unmanageable burden to IT org over time. Automation helps increase agility.
@@ -419,12 +419,12 @@ A template is basically a txt file (JSON/YML) that describes and defines the res
 
 
 Treat your templates like source code.  Put in repo, do code reviews, etc. 
-Benefits: repeatability, usability, etc.  Ex. If you have a dev env, you can easily deploy that to production env.   And you can repeat that same infra multiple times. Helps to ensure proper consistency.  Build really complex environments over and over again. 
+Benefits: repeatability, usability, etc. Ex. If you have a dev env, you can easily deploy that to production env.  And you can repeat that same infra multiple times. Helps to ensure proper consistency.  Build really complex environments over and over again. 
 
 
 
 
-Templates are the building block. You can consider as declarative instructions.  Consists of different elements in JSON/YML.  All templates start with a template format version (which is about the structure of the template).  Description section is optional, and explains what the template is what the template will create. “Parameters” (optional) makes the template reusable.  Think of them like variables. CIDR/subnets/instance types/etc could be parameters.  Every time you use Parameter you should set a Default value (helps ensure parameters always have a value). 
+Templates are the building block. You can consider as declarative instructions.  Consists of different elements in JSON/YAML.  All templates start with a template format version (which is about the structure of the template).  Description section is optional, and explains what the template is what the template will create. “Parameters” (optional) makes the template reusable.  Think of them like variables. CIDR/subnets/instance types/etc could be parameters.  Every time you use Parameter you should set a Default value (helps ensure parameters always have a value). 
 
 
 Mapping element is similar to parameters, but provided in a dictionary format. 
