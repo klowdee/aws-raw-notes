@@ -1,3 +1,341 @@
+# SAA - Solutions Architect Associate Notes
+
+## Kinesis
+
+- Send streaming data to Kinesis and do stuff with it
+- Ingests and analayzes data in real time
+- Extreme scalability
+- An AWS managed service
+
+---
+
+## Storage
+
+### EC2
+
+- *Emphemeral* storage - is destroyed once an instance is stopped
+
+### S3
+
+- Object stroage
+- Highly fault tolerant
+    - Copies of data stored across multiple AZ’s
+- 99.99% availability
+- **11 9’s** durability (99.999999999%)
+
+### EBS
+
+- 99.99% availability
+- 99.999% durability with **io2** volumes
+    - Other volumes are rated 99.8-99.9% durable
+    - Snapshosts can be used to provide backup points (to increase durability).  Snapshots stored in S3.
+- Highly
+
+### EFS
+
+- Cloud native NFS
+- Can provide parallel shared access to thousands of EC2 instances
+- Stored across multiple AZ’s and accessed concurrently in all of a Region’s AZ’s
+- 99.99% availability
+
+---
+
+## IPs
+
+### IPv4
+
+- Most common format used online
+- 3.7 billion different addresses in public space
+- Ex: `1.160.10.240`
+
+### IPv6
+
+- AWS supports IPv6
+- Common for IoT
+- Supports 340 trillion trillion trillion unqiue IP addresses
+- Ex: `3ffe:1900:4545:3:200:f8ff:fe21:67cf`
+
+### Public IP
+
+- Can be identified on the internet
+- Must be unique across the entire internet
+- Can be geo-located
+
+### Private IP
+
+- Can only be identifed on a private network
+- Must be unique across private network
+- Two different private networks can have the same IPs
+- Conntects to the internet via a NAT device + IGW
+- Only specifed range of IPs can be used as private IPs
+
+### Elastic IPs
+
+- Fixed public IPv4 IP address for an EC2 instance
+- Can be attached to one istance at a time
+- You own the IP as lon gas you don’t delete it
+- Can be used to mask instance/software failure by remapping the address to another instance
+- You can only have 5 Elastic IP in your AWS account (but can ask AWS to increase the amount)
+- Using Elastic IP often reflects bad architectual designs
+    - Preferable to use random public IP with a registered DNS name
+
+### Misc
+
+- By default, EC2 instances come with a private IP for the internal AWS network, and a public IP for the internet
+- When you SSH to an EC2 instance you must use the public IP (because a private IP wouldn’t work because it’s not the same network)
+- If an EC2 instance stops and is restarted, the public IP can change (if it doesn’t have an associated Elastic IP)
+
+---
+
+## Placemnet Groups
+
+- Strategies for EC2 instance placement
+
+### Cluster
+
+- All EC2 instance are on the same rack in the same AZ
+- Good for applications that need very low latency and high network throughput (Big Data jobs)
+- Pros
+    - Low latency
+    - 10Gbps bandwidth between instances
+- Cons
+    - If rack fails, all instances will fail at the same time
+
+### Spread
+
+- Opposite of Cluster
+- Minimizes failure risks
+- All EC2 instances are on different hardware racks
+- Good for critical apps that need to maximize high availability
+- Pros
+    - Can span across AZs
+- Cons
+    - Limited to 7 instances per AZ per Placement Group
+
+### Partition
+
+- Instances in a partition do not share racks with instances in other partitions
+- Can span across AZs
+- EC2 instances get access to the partition info as metadata
+- Good for Big Data - HDFS, HBase, Cassandra, Kafka
+
+---
+
+## Elastic Network Interfaces (ENI)
+
+- Represents a **virtual network card**
+- Bound to a specific AZ
+- Can create an ENI independantly and attach/move them on EC2 instances for failover
+- An ENI can have:
+    - Primary private IPv4, one more secondary IPv4
+    - One Elastic IP (IPv4) per private IPv4
+    - One public IPv4
+    - One or more Security Groups
+    - A MAC address
+
+---
+
+## EC2 Hibernate
+
+- In-memory (RAM) state is preserved
+- Instance boot is very fast
+- Under the hood the RAM state is written to a file in the root EBS volume (the EBS volume ***must*** be encrypted)
+- Good for services that take a long time to boot/initialize
+- Supports many instance families
+- Supports large RAM size (up to 150 GB)
+- Does not support bare metal instances
+- Supports many AMI
+- Available for On-Demand, Reserved, Spot instances
+- ***Cannot*** have an instance in hibernation more than 60 days
+- 
+
+---
+
+## Advanced EC2 Concepts
+
+### EC2 Nitro
+
+- New virtualization technology
+- Allows better performance
+- Better networking capabilities (HPC, IPv6)
+- Higher speed EBS (Nitro required for 64,000 EBS IOPS - max 32,000 on non-Nitro)
+- Better security
+
+### vCPU
+
+- CPU cores time threads per CPU.
+    - Ex: 4 CPU, 2 threads per CPU = **8 vCPU**
+- With multithreading, each thread is represented as a virtual CPU (vCPU)
+- You can tweak/optomize
+    - \# of CPU cores (you can decrease to lower **licensing costs**)
+    - \# of threads per core (to disable multithreading for high performance computing <HPC> workloads)
+
+### EC2 Capacity Reservations
+
+- Ensures you have capacity when needed
+- No need for 1 or 3 year commitment
+- Manual or planned end-date for the reservation
+- Capacity access is immediate
+- Billing begins immediately
+- Each Capacity Reservation is for one AZ only (need to do multiple reservations for other AZs)
+- Can combine with Reserved Instances and Savings Plans for cost savings
+
+---
+
+## EBS Encryption
+
+- With an encrypted EBS volume you get:
+    - Data at rest encrypted inside the volume
+    - All data moving between instance and volume is encrypted
+    - All snapshots encrypted
+    - All volumes created from (encrypted) snapshots
+- Encryption (and decryption) happen transparently with no needed actions (other than enabling)
+- Has a very minimal impact on latency
+- EBS Encryption **uses keys from KMS (AES-256)**
+
+### To encrypt an unemcrypted EBS volume
+
+- Create an EBS snapshot of the volume
+- Encrypt the snapshot (using copy)
+- Create new EBS volume from the snapshot (this will be encrypted too)
+- Attach the encrypted volume to the original EC2 instance
+- Note: you can also take any unencrypted snapshot and encrypt it 
+
+---
+
+## Auto Scaling Groups (ASG)
+
+### ASG Default Termination Policy:
+
+- Find AZ with most # of instances
+- If there are multiple AZ to choose from, delete the one with the oldest launch configuration
+- ASG tries to balance the number of instances across AZ’s by default
+
+### Lifecycle Hooks
+
+- You have ability to perform actions before an instance goes in service (while in *Pending* state)
+    - Will move to a *Pending:Wait* sate and can do things like configurations, etc, and then move to *Pending:Proceed*
+- You can also perform actions before an instance is terminated (*Terminating* state)
+    - Moves to *Terminating:Wait* where you can perform actions
+        - Good for extracting info, like logs
+    - Then once done goes to *Terminating:Proceed* state to complete the termination
+
+### Launch Template (newer) vs Launch Configuration (legacy)
+
+- Both:
+    - Used to define id of the AMI, the instance type, a key pair, Security Groups, and other parametres used when launching EC2 instances (tags, user-data, etc)
+- Launch Configuration
+    - Must be re-created every time
+- Launch Template
+    - Recommended by AWS
+    - Can have multiple versions
+    - Create parameter subsets
+        - partial configuration for re-use and inheritance
+    - Provision using both On-Demand and Spot instances (or a mix)
+    - Can use T2 unlimited burst feature
+
+---
+
+## Ports
+
+### Important Ports:
+
+- FTP: `21`
+- SSH: `22`
+- SFTP: `22` (same as SSH)
+- HTTP: `80`
+- HTTPS: `443`
+
+### RDS ports:
+
+- PostgreSQL: `5432`
+- MySQL: `3306`
+- Oracle RDS: `1521`
+- MSSQL Server: `1433`
+- MariaDB: `3306` (same as MySQL)
+- Aurora:
+    - `5432` (if PostgreSQL compatible)
+    - `3306` (if MySQL compatible)
+
+---
+
+## API Gateway
+
+- Serverless API - AWS Lambda + API Gateway
+- Support WebSocket Protocol
+- Handles API versioning
+- Handles different environments (QA, prod, etc)
+- Handles security
+- Swagger/Open API to quickly define APIs
+- Transform & validate requests & responses
+- Generate SDK/API specifications
+- Cache API responses
+
+- Integrates with
+    - Lambda
+    - HTTP
+    - AWS Service
+- Endpoint Types (deployments)
+    - Edge-optomized (Default)
+        - Routed through CloudFront Edge locations
+        - Still lives in 1 region
+    - Regional
+        - For clients in same region
+    - Private
+        - Only accessed from your VPC
+        - Use resource policies to access
+
+### Security
+
+- IAM
+    - IAM Permissions to attach User/Role
+    - API  Gateway verifies IAM permissions passed by the calling application
+    - Good for accessing within your own infra backend
+    - Leverages SigV4 capability where IAM creds are in headers
+- Lambda (Custom) Authorizer
+    - Uses Lambda to validate the token in header
+    - Helps w/ OAuth, SAML, 3rd party auths
+    - Lambda must return an IAM policy for user
+- Cognito User Pools
+    - Fully manages user lifecycle
+    - Verifies identify automatically
+    - No custom implementation/code required
+    - Only helps with authentication, not authorization
+
+## Cognito
+
+### Cognito User Pools (CUP)
+
+- Sign in functionality for app users
+- Integrates w/ API Gateway for auth
+- simple login: Username/email, password combo
+- Enable Federated Identifies (Facebook, Google, SAML, etc)
+
+### Cognito Federated Identity Pools (FIP)
+
+- Provide AWS credentials to users so that they can access AWS directly
+- Example - provide temporary access to write to S3 bucket using Facebook Login
+
+### Cognito Sync
+
+- Synchronizes data from device to Cognito
+- Store preferences, config, state of app
+- Cross device sync
+- Requires FIP (not CUP)
+- Deprecate and replaced by AppSync
+
+## SAM - Serverless Application Model
+
+- Framework for developing and deploying serverless apps
+- All config is YAML code
+    - Lambda functions
+    - DynamoDB Tables
+    - API Gateway
+    - Cognito User Pools
+- Can help you run Lambda, API Gateway, Dynamo locally
+- 
+
+
 # Architecting Accelerator
 
 Managed services - resiliency of infrastructure 
